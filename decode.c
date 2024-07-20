@@ -214,7 +214,9 @@ struct Array *rs_find_error_locator(struct Array *synd, uint8_t nsym, uint8_t er
 
         new_loc = gf_poly_scale(old_loc, delta, gf_table);
         old_loc = gf_poly_scale(err_loc, gf_inverse(delta, gf_table), gf_table);
-        memmove(err_loc->array, new_loc->array, err_loc->used);
+	while (err_loc->size < new_loc->used)
+	  insertArray(err_loc);
+	memmove(err_loc->array, new_loc->array, err_loc->used);
         err_loc->used = new_loc->used;
       }
 
