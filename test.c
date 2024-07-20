@@ -16,14 +16,14 @@ int main()
 	initArray(gf_table->gf_exp, 512);
 	initArray(gf_table->gf_log, 256);
 	gf_table = init_tables();
-	
+
 	printf("##### Reed-Solomon Error Correction #####\n");
 	printf("Enter the string you want to test and press enter when you're done:\n");
-	
+
 	struct Array *msg_in = malloc(sizeof(struct Array));
 	initArray(msg_in, 50);
 	char my_msg[BUFFER_SIZE];
-	
+
 	fgets( my_msg, sizeof(my_msg), stdin );
 
 	for (size_t i = 0; i < strlen(my_msg); i++) {
@@ -50,25 +50,25 @@ int main()
 	struct Array *rev_pos = malloc(sizeof(struct Array));
 
 	msg = rs_encode_msg(msg_in, 14, gf_table);
-	
+
 	printf("Msg Encoded: [");
 	for (size_t i = 0; i < msg->used; i++) {
 		printf("%u,",msg->array[i]);
 	}
 	printf("]\n");
-	
-	
+
+
 	//Tempering msg
 	msg->array[0] = 0;
 	msg->array[3] = 0;
 	msg->array[10] = 0;
-	
+
 	printf("Msg Tempered: [");
 	for (size_t i = 0; i < strlen(my_msg); i++) {
 		printf("%u,",msg->array[i]);
 	}
 	printf("]\n");
-	
+
 	printf("Msg Tempered: ");
 	for (size_t i = 0; i < strlen(my_msg); i++) {
 		printf("%c",msg->array[i]);
@@ -79,7 +79,7 @@ int main()
 		printf("%u,",msg->array[i]);
 	}
 	printf("]\n");
-	
+
 	synd = rs_calc_syndromes(msg, 14, gf_table);
 	printf("synd : ");
 	for (size_t i = 0; i < synd->used; i++) {
@@ -99,25 +99,25 @@ int main()
 	}
 	printf("\n");
 	rev_pos = reverse_arr(pos);
-	
+
 	printf("Error positions: [");
 	for (size_t i = 0; i < rev_pos->used; i++) {
 		printf("%u,", rev_pos->array[i]);
 	}
 	printf("]\n");
-	
+
 	struct Array *err_pos = malloc(sizeof(struct Array));
 	initArray(err_pos, 3);
 	err_pos->array[0] = 0;
-	
+
 	msg = rs_correct_msg(msg, 14, err_pos, gf_table);
-	
+
 	printf("Msg Corrected: [");
 	for (size_t i = 0; i < msg->used; i++) {
 		printf("%u,",msg->array[i]);
 	}
 	printf("]\n");
-	
+
 	printf("Msg Corrected: ");
 	for (size_t i = 0; i < strlen(my_msg); i++) {
 		printf("%c",msg->array[i]);

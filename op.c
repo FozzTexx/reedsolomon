@@ -118,13 +118,13 @@ struct gf_tables* init_tables()
 	struct gf_tables *gf_table = malloc(sizeof(struct gf_tables));
 	struct Array *gf_expp = malloc(sizeof(struct Array));
 	struct Array *gf_logg = malloc(sizeof(struct Array));
-	
+
 	initArray(gf_expp, 512); // Init the exponent table
 	initArray(gf_logg, 256); // Init the log table
-	
+
 	uint32_t x = 1;
 	uint32_t prim = 0x11d;
-	
+
 	for(int i = 0; i < 256; i++){
 		gf_expp->array[i] = x;
 		insertArray(gf_expp);
@@ -141,7 +141,7 @@ struct gf_tables* init_tables()
 	//set the tables to the struct
 	gf_table->gf_exp = gf_expp;
 	gf_table->gf_log = gf_logg;
-	
+
 	return gf_table;
 }
 
@@ -211,7 +211,7 @@ struct Tuple* gf_poly_div(struct Array *dividend, struct Array *divisor, struct 
 	struct Array *msg_out3 = malloc(sizeof(struct Array));
 	initArray(msg_out3, length);
 	memmove(msg_out->array, dividend->array, dividend->used);
-	
+
 	for(size_t i = 0; i < dividend->used - divisor->used + 1; i++){
 		uint8_t coef = msg_out->array[i];
 		if(coef != 0){
@@ -221,14 +221,14 @@ struct Tuple* gf_poly_div(struct Array *dividend, struct Array *divisor, struct 
 		}
 	}
 	msg_out->used = divisor->used + dividend->used-1;
-	
+
 	memmove(msg_out2->array, msg_out->array, (msg_out->used - separator));
 	msg_out2->used = msg_out->used - separator;
 	msg_out3->array = msg_out->array + (msg_out->used - separator);
 	msg_out3->used = separator;
 	result->x = msg_out2;
 	result->y = msg_out3;
-	
+
 	return result;
-	
+
 }

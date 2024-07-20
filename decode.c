@@ -16,7 +16,7 @@ struct Array* rs_calc_syndromes(struct Array *msg, uint8_t nsym, struct gf_table
 
 	initZArray(synd, nsym+1);
 	initZArray(res, nsym+2);
-	
+
 	for(uint8_t i = 0; i < nsym; i++){
 		synd->array[i] = gf_poly_eval(msg, gf_pow(2, i, gf_table), gf_table);
 		insertArray(synd);
@@ -97,7 +97,7 @@ struct Array* rs_correct_errdata(struct Array *msg_in, struct Array *synd, struc
 	struct Array *E = malloc(sizeof(struct Array));
 
 	initArray(coef_pos, err_pos->used+1);
-	
+
 	for(size_t i = 0; i < err_pos->used; i++){
 		coef_pos->array[i] = len - 1 - err_pos->array[i];
 		insertArray(coef_pos);
@@ -105,25 +105,25 @@ struct Array* rs_correct_errdata(struct Array *msg_in, struct Array *synd, struc
 
 	initZArray(E, len);
 
-	initArray(err_loc, coef_pos->used+1);	
+	initArray(err_loc, coef_pos->used+1);
 	err_loc= rs_find_errdata_locator(coef_pos, gf_table);
-	
+
 	uint8_t nsym = err_loc->used - 1;
 	err_eval = rs_find_error_evaluator(rev_synd, err_loc, nsym, gf_table);
 	err_eval = reverse_arr(err_eval);
 	initArray(X, coef_pos->used);
-	
+
 	for(size_t t = 0; t < coef_pos->used; t++){
 		uint8_t q = coef_pos->array[t];
 		X->array[t] = gf_pow(2, q, gf_table);
 		insertArray(X);
 	}
-	
+
 	E->used = len;
 	for(size_t i = 0; i < X->used; i++){
 		struct Array *err_loc_prime_tmp = malloc(sizeof(struct Array));
 		uint8_t Xi_inv = gf_inverse(X->array[i], gf_table);
-		
+
 		initArray(err_loc_prime_tmp, X->used+1);
 		for(size_t j = 0; j < X->used; j++){
 			if(j != i){
@@ -134,7 +134,7 @@ struct Array* rs_correct_errdata(struct Array *msg_in, struct Array *synd, struc
 		uint8_t err_loc_prime = 1;
 		for(size_t k = 0; k < err_loc_prime_tmp->used; k++)
 			err_loc_prime = gf_mul(err_loc_prime, err_loc_prime_tmp->array[k], gf_table);
-		
+
 		uint8_t y = gf_poly_eval(reverse_arr(err_eval), Xi_inv, gf_table);
 		y = gf_mul(gf_pow(X->array[i], 1, gf_table), y, gf_table);
 		uint8_t magnitude = gf_div(y, err_loc_prime, gf_table);
@@ -159,11 +159,11 @@ struct Array* rs_find_error_locator(struct Array* synd, uint8_t nsym, uint8_t er
 	insertArray(err_loc);
 	old_loc->array[0] = 1;
 	insertArray(old_loc);
-	
+
 	size_t synd_shift = 0;
 	if(synd->used > nsym)
 		synd_shift = synd->used - nsym;
-	
+
 	for(int i = 0; i < nsym-erase_count;i++){
 		size_t K = i + synd_shift;
 		uint8_t delta = synd->array[K];
@@ -244,9 +244,9 @@ struct Array* rs_correct_msg(struct Array *msg_in, uint8_t nsym, struct Array *e
 	struct Array *msg_out = malloc(sizeof(struct Array*));
 	initArray(msg_out, msg_in->used);
 	memmove(msg_out->array, msg_in->array, msg_in->used);
-	
+
 	struct Array *synd = rs_calc_syndromes(msg_in, nsym, gf_table);
-	
+
 	uint8_t max = synd->array[0];
 	for (size_t i = 0; i < synd->used; i++) {
 		max = synd->array[i] > max ? synd->array[i] : max;
@@ -256,9 +256,9 @@ struct Array* rs_correct_msg(struct Array *msg_in, uint8_t nsym, struct Array *e
 	}
 	//struct Array *fsynd = rs_forney_syndromes(synd, erase_pos, msg_out->used, gf_table);
 	struct Array *err_loc = rs_find_error_locator(synd, nsym, 0, gf_table);
-	
+
 	struct Array *err_pos = rs_find_errors(reverse_arr(err_loc) , msg_in->used, gf_table);
-	
+
 	if (err_pos == NULL) {
 		fprintf(stderr, "Could not locate error");
 		exit(EXIT_FAILURE);
