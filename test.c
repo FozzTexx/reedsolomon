@@ -13,8 +13,8 @@ int main()
   struct gf_tables *gf_table = malloc(sizeof(struct gf_tables));
 
 
-  gf_table->gf_exp = malloc(sizeof(struct Array));
-  gf_table->gf_log = malloc(sizeof(struct Array));
+  gf_table->gf_exp = allocArray();
+  gf_table->gf_log = allocArray();
   initArray(gf_table->gf_exp, 512);
   initArray(gf_table->gf_log, 256);
   gf_table = init_tables();
@@ -22,7 +22,7 @@ int main()
   printf("##### Reed-Solomon Error Correction #####\n");
   printf("Enter the string you want to test and press enter when you're done:\n");
 
-  struct Array *msg_in = malloc(sizeof(struct Array));
+  struct Array *msg_in = allocArray();
 
 
   initArray(msg_in, 50);
@@ -43,18 +43,18 @@ int main()
   }
   printf("]\n");
 
-  struct Array *msg = malloc(sizeof(struct Array));
+  struct Array *msg = allocArray();
 
 
   initArray(msg, 170);
 
-  struct Array *err_loc = malloc(sizeof(struct Array));
+  struct Array *err_loc = allocArray();
 
-  struct Array *synd = malloc(sizeof(struct Array));
+  struct Array *synd = allocArray();
 
-  struct Array *pos = malloc(sizeof(struct Array));
+  struct Array *pos = allocArray();
 
-  struct Array *rev_pos = malloc(sizeof(struct Array));
+  struct Array *rev_pos = allocArray();
 
 
   msg = rs_encode_msg(msg_in, 14, gf_table);
@@ -114,7 +114,7 @@ int main()
   }
   printf("]\n");
 
-  struct Array *err_pos = malloc(sizeof(struct Array));
+  struct Array *err_pos = allocArray();
 
 
   initArray(err_pos, 3);

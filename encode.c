@@ -5,7 +5,7 @@
 
 struct Array *array2(uint8_t a, uint8_t b)
 {
-  struct Array *p = malloc(sizeof(struct Array));
+  struct Array *p = allocArray();
 
 
   initArray(p, 3);
@@ -18,7 +18,7 @@ struct Array *array2(uint8_t a, uint8_t b)
 /*Generate an irreducible generator polynomial (necessary to encode a message into Reed-Solomon)*/
 struct Array *rs_generator_poly(uint8_t nsym, struct gf_tables *gf_table)
 {
-  struct Array *g = malloc(sizeof(struct Array));
+  struct Array *g = allocArray();
 
 
   initArray(g, nsym);
@@ -38,14 +38,14 @@ struct Array *rs_encode_msg(struct Array *msg_in, uint8_t nsym, struct gf_tables
     exit(EXIT_FAILURE);
   }
   size_t len_gen = nsym * 2;
-  struct Array *gen = malloc(sizeof(struct Array));
+  struct Array *gen = allocArray();
 
 
   initArray(gen, len_gen);
 
   gen = rs_generator_poly(nsym, gf_table);
 
-  struct Array *msg_out = malloc(sizeof(struct Array));
+  struct Array *msg_out = allocArray();
 
 
   initZArray(msg_out, msg_in->used + gen->used - 1);

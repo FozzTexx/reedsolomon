@@ -11,8 +11,8 @@
 
 struct Array *rs_calc_syndromes(struct Array *msg, uint8_t nsym, struct gf_tables *gf_table)
 {
-  struct Array *synd = malloc(sizeof(struct Array));
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *synd = allocArray();
+  struct Array *res = allocArray();
 
 
   initZArray(synd, nsym + 1);
@@ -36,7 +36,7 @@ struct Array *rs_calc_syndromes(struct Array *msg, uint8_t nsym, struct gf_table
  decoding or a wrong message,particularly if there are too many errors, but it usually does)*/
 bool rs_check(struct Array *msg, uint8_t nsym, struct gf_tables *gf_table)
 {
-  struct Array *synd = malloc(sizeof(struct Array));
+  struct Array *synd = allocArray();
 
 
   initArray(synd, nsym + 1);
@@ -52,13 +52,13 @@ bool rs_check(struct Array *msg, uint8_t nsym, struct gf_tables *gf_table)
 
 struct Array *rs_find_errdata_locator(struct Array *e_pos, struct gf_tables *gf_table)
 {
-  struct Array *e_loc = malloc(sizeof(struct Array));
+  struct Array *e_loc = allocArray();
 
 
   initZArray(e_loc, e_pos->used + 1);
   e_loc->array[0] = 1;
   insertArray(e_loc);
-  struct Array *one = malloc(sizeof(struct Array));
+  struct Array *one = allocArray();
 
 
   initZArray(one, 2);
@@ -66,7 +66,7 @@ struct Array *rs_find_errdata_locator(struct Array *e_pos, struct gf_tables *gf_
   insertArray(one);
   for (size_t i = 0; i < e_pos->used; i++) {
     uint8_t pow_two = gf_pow(2, e_pos->array[i], gf_table);
-    struct Array *arr = malloc(sizeof(struct Array));
+    struct Array *arr = allocArray();
 
 
     initArray(arr, 2);
@@ -89,7 +89,7 @@ struct Array *rs_find_errdata_locator(struct Array *e_pos, struct gf_tables *gf_
 struct Array *rs_find_error_evaluator(struct Array *synd, struct Array *err_loc, uint8_t nsym,
                                       struct gf_tables *gf_table)
 {
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *res = allocArray();
 
 
   initArray(res, nsym + 2);
@@ -108,12 +108,12 @@ struct Array *rs_correct_errdata(struct Array *msg_in, struct Array *synd,
 {
   size_t len = msg_in->size;
 
-  struct Array *coef_pos = malloc(sizeof(struct Array));
-  struct Array *err_loc = malloc(sizeof(struct Array));
+  struct Array *coef_pos = allocArray();
+  struct Array *err_loc = allocArray();
+  struct Array *err_eval = allocArray();
+  struct Array *X = allocArray();
+  struct Array *E = allocArray();
   struct Array *rev_synd = reverse_arr(synd);
-  struct Array *err_eval = malloc(sizeof(struct Array));
-  struct Array *X = malloc(sizeof(struct Array));
-  struct Array *E = malloc(sizeof(struct Array));
 
 
   initArray(coef_pos, err_pos->used + 1);
@@ -145,7 +145,7 @@ struct Array *rs_correct_errdata(struct Array *msg_in, struct Array *synd,
 
   E->used = len;
   for (size_t i = 0; i < X->used; i++) {
-    struct Array *err_loc_prime_tmp = malloc(sizeof(struct Array));
+    struct Array *err_loc_prime_tmp = allocArray();
     uint8_t Xi_inv = gf_inverse(X->array[i], gf_table);
 
 
@@ -184,11 +184,11 @@ struct Array *rs_correct_errdata(struct Array *msg_in, struct Array *synd,
 struct Array *rs_find_error_locator(struct Array *synd, uint8_t nsym, uint8_t erase_count,
                                     struct gf_tables *gf_table)
 {
-  struct Array *err_loc = malloc(sizeof(struct Array *));
+  struct Array *err_loc = allocArray();
 
 
   initZArray(err_loc, 10);
-  struct Array *old_loc = malloc(sizeof(struct Array *));
+  struct Array *old_loc = allocArray();
 
 
   initZArray(old_loc, 10);
@@ -215,7 +215,7 @@ struct Array *rs_find_error_locator(struct Array *synd, uint8_t nsym, uint8_t er
     insertArray(old_loc);
     if (delta != 0) {
       if (old_loc->used > err_loc->used) {
-        struct Array *new_loc = malloc(sizeof(struct Array *));
+        struct Array *new_loc = allocArray();
 
 
         new_loc = gf_poly_scale(old_loc, delta, gf_table);
@@ -223,7 +223,7 @@ struct Array *rs_find_error_locator(struct Array *synd, uint8_t nsym, uint8_t er
         memmove(err_loc->array, new_loc->array, err_loc->used);
         err_loc->used = new_loc->used;
       }
-      struct Array *scale = malloc(sizeof(struct Array *));
+      struct Array *scale = allocArray();
 
 
       scale = gf_poly_scale(old_loc, delta, gf_table);
@@ -247,7 +247,7 @@ struct Array *rs_find_errors(struct Array *err_loc, size_t nmess, struct gf_tabl
 {
   size_t errs = err_loc->used - 1;
   size_t counter = 0;
-  struct Array *err_pos = malloc(sizeof(struct Array *));
+  struct Array *err_pos = allocArray();
 
 
   initArray(err_pos, errs);
@@ -269,7 +269,7 @@ struct Array *rs_find_errors(struct Array *err_loc, size_t nmess, struct gf_tabl
 struct Array *rs_forney_syndromes(struct Array *synd, struct Array *pos, uint8_t nmess,
                                   struct gf_tables *gf_table)
 {
-  struct Array *erase_pos_reversed = malloc(sizeof(struct Array *));
+  struct Array *erase_pos_reversed = allocArray();
 
 
   initArray(erase_pos_reversed, pos->used);
@@ -277,7 +277,7 @@ struct Array *rs_forney_syndromes(struct Array *synd, struct Array *pos, uint8_t
     erase_pos_reversed->array[i] = nmess - 1 - pos->array[i];
   }
   erase_pos_reversed->used = pos->used;
-  struct Array *fsynd = malloc(sizeof(struct Array *));
+  struct Array *fsynd = allocArray();
 
 
   initArray(fsynd, synd->used);
@@ -301,7 +301,7 @@ struct Array *rs_correct_msg(struct Array *msg_in, uint8_t nsym, struct Array *e
     fprintf(stderr, "Message is too long ");
     exit(EXIT_FAILURE);
   }
-  struct Array *msg_out = malloc(sizeof(struct Array *));
+  struct Array *msg_out = allocArray();
 
 
   initArray(msg_out, msg_in->used);

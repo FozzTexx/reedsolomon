@@ -18,7 +18,7 @@ unsigned int count(unsigned int i)
 struct Array *split_arr(struct Array *l, size_t separator1, size_t separator2)
 {
   size_t i, j;
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *res = allocArray();
 
 
   initArray(res, l->size);
@@ -33,7 +33,7 @@ struct Array *split_arr(struct Array *l, size_t separator1, size_t separator2)
 struct Array *merge(struct Array *l1, struct Array *l2)
 {
   uint8_t size = l1->size + l2->size;
-  struct Array *l = malloc(sizeof(struct Array));
+  struct Array *l = allocArray();
 
 
   initArray(l, size);
@@ -50,7 +50,7 @@ struct Array *merge(struct Array *l1, struct Array *l2)
 
 struct Array *reverse_arr(struct Array *l)
 {
-  struct Array *res = malloc(sizeof(struct Array *));
+  struct Array *res = allocArray();
 
 
   initArray(res, l->used);
@@ -134,8 +134,8 @@ struct gf_tables *init_tables()
 {
   // Init tables
   struct gf_tables *gf_table = malloc(sizeof(struct gf_tables));
-  struct Array *gf_expp = malloc(sizeof(struct Array));
-  struct Array *gf_logg = malloc(sizeof(struct Array));
+  struct Array *gf_expp = allocArray();
+  struct Array *gf_logg = allocArray();
 
 
   initArray(gf_expp, 512);      // Init the exponent table
@@ -169,7 +169,7 @@ struct gf_tables *init_tables()
 struct Array *gf_poly_scale(struct Array *p, uint8_t x, struct gf_tables *gf_table)
 {
   size_t len = p->used;
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *res = allocArray();
 
 
   initZArray(res, len);
@@ -187,7 +187,7 @@ struct Array *gf_poly_scale(struct Array *p, uint8_t x, struct gf_tables *gf_tab
 struct Array *gf_poly_add(struct Array *p, struct Array *q)
 {
   size_t len = p->used >= q->used ? p->used : q->used;
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *res = allocArray();
 
 
   initZArray(res, len);
@@ -204,7 +204,7 @@ struct Array *gf_poly_add(struct Array *p, struct Array *q)
 /* Multiplies two polynomials in a GF(2^8) finite field */
 struct Array *gf_poly_mul(struct Array *p, struct Array *q, struct gf_tables *gf_table)
 {
-  struct Array *res = malloc(sizeof(struct Array));
+  struct Array *res = allocArray();
 
 
   initZArray(res, (p->used + q->used));
@@ -235,15 +235,15 @@ struct Tuple *gf_poly_div(struct Array *dividend, struct Array *divisor,
   struct Tuple *result = malloc(sizeof(struct Tuple));
   size_t length = dividend->used;
   size_t separator = divisor->used - 1;
-  struct Array *msg_out = malloc(sizeof(struct Array));
+  struct Array *msg_out = allocArray();
 
 
   initArray(msg_out, length);
-  struct Array *msg_out2 = malloc(sizeof(struct Array));
+  struct Array *msg_out2 = allocArray();
 
 
   initArray(msg_out2, length);
-  struct Array *msg_out3 = malloc(sizeof(struct Array));
+  struct Array *msg_out3 = allocArray();
 
 
   initArray(msg_out3, length);

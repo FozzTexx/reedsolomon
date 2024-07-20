@@ -52,7 +52,6 @@ void deleteArray(struct Array *A)
       exit(EXIT_FAILURE);
   }
   A->used++;
-
 }
 
 //Frees the array

@@ -13,6 +13,8 @@ struct Array {
   size_t size;
 };
 
+#define allocArray() malloc(sizeof(struct Array))
+
 void initArray(struct Array *a, size_t initialSize);
 void initZArray(struct Array *a, size_t initialSize);
 void insertArray(struct Array *a);
