@@ -39,7 +39,7 @@ struct Array *rs_encode_msg(struct Array *msg_in, uint8_t nsym, struct gf_tables
 
 
   if (msg_in->used + nsym > 255) {
-    fprintf(stderr, "Message too long, %lu is the size when 255 is the max",
+    fprintf(stderr, "Message too long, %u is the size when 255 is the max",
             msg_in->used + nsym);
     exit(EXIT_FAILURE);
   }
