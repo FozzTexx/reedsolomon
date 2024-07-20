@@ -32,16 +32,17 @@ struct Array *split_arr(struct Array *l, size_t separator1, size_t separator2)
 /*Merges two lists*/
 struct Array *merge(struct Array *l1, struct Array *l2)
 {
+  size_t i;
   uint8_t size = l1->size + l2->size;
   struct Array *l = allocArray();
 
 
   initArray(l, size);
-  for (size_t i = 0; i < l1->used; i++) {
+  for (i = 0; i < l1->used; i++) {
     l->array[i] = l1->array[i];
     insertArray(l);
   }
-  for (size_t i = 1; i < l2->used; i++) {
+  for (i = 1; i < l2->used; i++) {
     l->array[l1->used + i] = l2->array[i];
     insertArray(l);
   }
@@ -50,15 +51,12 @@ struct Array *merge(struct Array *l1, struct Array *l2)
 
 struct Array *reverse_arr(struct Array *l)
 {
+  size_t i, j;
   struct Array *res = allocArray();
 
 
   initArray(res, l->used);
-  size_t j = l->used;
-  size_t i = 0;
-
-
-  for (; i < l->used; i++, j--) {
+  for (i = 0, j = l->used; i < l->used; i++, j--) {
     res->array[i] = l->array[j - 1];
     insertArray(res);
   }
@@ -67,8 +65,11 @@ struct Array *reverse_arr(struct Array *l)
 
 struct Array *copy_arr(struct Array *l1, struct Array *l2)
 {
+  size_t i;
+
+
   initArray(l2, l1->used);
-  for (size_t i = 0; i < l1->used; i++) {
+  for (i = 0; i < l1->used; i++) {
     l2[i] = l1[i];
     insertArray(l2);
   }
@@ -77,7 +78,10 @@ struct Array *copy_arr(struct Array *l1, struct Array *l2)
 
 struct Array *pop_arr(struct Array *l)
 {
-  for (size_t i = 0; i < l->used; i++)
+  size_t i;
+
+
+  for (i = 0; i < l->used; i++)
     l[i] = l[i + 1];
   l->array[l->used] = 0;
   l->used -= 1;
@@ -132,7 +136,8 @@ uint8_t gf_inverse(uint8_t x, struct gf_tables *gf_table)
 /*Precompute the logarithm and anti-log tables for faster computation later, using the provided primitive polynomial.*/
 struct gf_tables *init_tables()
 {
-  // Init tables
+  int i;
+  uint32_t x, prim;
   struct gf_tables *gf_table = malloc(sizeof(struct gf_tables));
   struct Array *gf_expp = allocArray();
   struct Array *gf_logg = allocArray();
@@ -141,11 +146,10 @@ struct gf_tables *init_tables()
   initArray(gf_expp, 512);      // Init the exponent table
   initArray(gf_logg, 256);      // Init the log table
 
-  uint32_t x = 1;
-  uint32_t prim = 0x11d;
+  x = 1;
+  prim = 0x11d;
 
-
-  for (int i = 0; i < 256; i++) {
+  for (i = 0; i < 256; i++) {
     gf_expp->array[i] = x;
     insertArray(gf_expp);
     gf_logg->array[x] = i;
@@ -154,7 +158,7 @@ struct gf_tables *init_tables()
     if (x & 0x100)
       x ^= prim;
   }
-  for (int i = 255; i < 512; i++) {
+  for (i = 255; i < 512; i++) {
     gf_expp->array[i] = gf_expp->array[i - 255];
     insertArray(gf_expp);
   }
@@ -168,12 +172,13 @@ struct gf_tables *init_tables()
 /* Multiplies a polynomial by a scalar in a GF(2^8) finite field */
 struct Array *gf_poly_scale(struct Array *p, uint8_t x, struct gf_tables *gf_table)
 {
+  size_t i;
   size_t len = p->used;
   struct Array *res = allocArray();
 
 
   initZArray(res, len);
-  for (size_t i = 0; i < len; i++) {
+  for (i = 0; i < len; i++) {
     uint8_t result = gf_mul(p->array[i], x, gf_table);
 
 
@@ -186,15 +191,16 @@ struct Array *gf_poly_scale(struct Array *p, uint8_t x, struct gf_tables *gf_tab
 /* Adds two polynomials in a GF(2^8) finite field */
 struct Array *gf_poly_add(struct Array *p, struct Array *q)
 {
+  size_t i;
   size_t len = p->used >= q->used ? p->used : q->used;
   struct Array *res = allocArray();
 
 
   initZArray(res, len);
-  for (size_t i = 0; i < p->used; i++) {
+  for (i = 0; i < p->used; i++) {
     res->array[i + len - p->used] = p->array[i];
   }
-  for (size_t i = 0; i < q->used; i++) {
+  for (i = 0; i < q->used; i++) {
     res->array[i + len - q->used] ^= q->array[i];
   }
   res->used = len;
@@ -204,12 +210,13 @@ struct Array *gf_poly_add(struct Array *p, struct Array *q)
 /* Multiplies two polynomials in a GF(2^8) finite field */
 struct Array *gf_poly_mul(struct Array *p, struct Array *q, struct gf_tables *gf_table)
 {
+  size_t i, j;
   struct Array *res = allocArray();
 
 
   initZArray(res, (p->used + q->used));
-  for (size_t j = 0; j < q->used; j++) {
-    for (size_t i = 0; i < p->used; i++) {
+  for (j = 0; j < q->used; j++) {
+    for (i = 0; i < p->used; i++) {
       res->array[i + j] = gf_add(res->array[i + j], gf_mul(p->array[i], q->array[j], gf_table));
     }
   }
@@ -220,10 +227,11 @@ struct Array *gf_poly_mul(struct Array *p, struct Array *q, struct gf_tables *gf
 /*Evaluates a polynomial in GF(2^p) given the value for x. This is based on Horner's scheme for maximum efficiency.*/
 uint8_t gf_poly_eval(struct Array *p, uint8_t x, struct gf_tables *gf_table)
 {
+  size_t i;
   uint8_t y = p->array[0];
 
 
-  for (size_t i = 1; i < p->used; i++)
+  for (i = 1; i < p->used; i++)
     y = gf_mul(y, x, gf_table) ^ p->array[i];
   return y;
 }
@@ -232,29 +240,27 @@ uint8_t gf_poly_eval(struct Array *p, uint8_t x, struct gf_tables *gf_table)
 struct Tuple *gf_poly_div(struct Array *dividend, struct Array *divisor,
                           struct gf_tables *gf_table)
 {
+  size_t i;
   struct Tuple *result = malloc(sizeof(struct Tuple));
   size_t length = dividend->used;
   size_t separator = divisor->used - 1;
   struct Array *msg_out = allocArray();
-
-
-  initArray(msg_out, length);
   struct Array *msg_out2 = allocArray();
-
-
-  initArray(msg_out2, length);
   struct Array *msg_out3 = allocArray();
 
 
+  initArray(msg_out, length);
+  initArray(msg_out2, length);
   initArray(msg_out3, length);
   memmove(msg_out->array, dividend->array, dividend->used);
 
-  for (size_t i = 0; i < dividend->used - divisor->used + 1; i++) {
+  for (i = 0; i < dividend->used - divisor->used + 1; i++) {
+    size_t j;
     uint8_t coef = msg_out->array[i];
 
 
     if (coef != 0) {
-      for (size_t j = 1; j < divisor->used; j++) {
+      for (j = 1; j < divisor->used; j++) {
         msg_out->array[i + j] ^= gf_mul(divisor->array[j], coef, gf_table);
       }
     }

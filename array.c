@@ -25,11 +25,12 @@ void initZArray(struct Array *A, size_t initialSize)
 //Increment the size of the array by one and double the size if in need
 void insertArray(struct Array *A)
 {
+  void *p;
+
+
   if (A->used == A->size) {
     A->size *= 2;
-    void *p = realloc(A->array, A->size * sizeof(uint8_t));
-
-
+    p = realloc(A->array, A->size * sizeof(uint8_t));
     if (p != NULL)
       A->array = p;
     else
@@ -41,11 +42,12 @@ void insertArray(struct Array *A)
 //Decrement the size of the array by one
 void deleteArray(struct Array *A)
 {
+  void *p;
+
+
   if (A->used-- == A->size >> 2) {
     A->size >>= 2;
-    void *p = realloc(A->array, A->size * sizeof(uint8_t));
-
-
+    p = realloc(A->array, A->size * sizeof(uint8_t));
     if (p != NULL)
       A->array = p;
     else
