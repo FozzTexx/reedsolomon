@@ -1,4 +1,5 @@
 #include "Headers/array.h"
+#include <string.h>
 
 //Initialize an empty array
 void initArray(struct Array *A, size_t initialSize)
@@ -35,6 +36,7 @@ void insertArray(struct Array *A)
       A->array = p;
     else
       exit(EXIT_FAILURE);
+    memset(&A->array[A->used], 0, A->size * sizeof(uint8_t) / 2);
   }
   A->used++;
 }
