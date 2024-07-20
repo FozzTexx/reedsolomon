@@ -1,1 +1,10 @@
 .DS_Store
+.AppleDouble
+*~
+*.orig
+*.lst
+*.d
+test
+test.bin
+apple2enh_obj
+linux-i686_obj
